@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Night Collection · Maia Fashion</title>
+  <meta name="description" content="Night Collection Maia Fashion: moda feminina para festas e noites inesquecíveis.">
+
+  <!-- Ícone da aba do navegador (favicon) -->
+  <link rel="icon" href="img/logo/maia-fashion-icone.svg" type="image/svg+xml">
+
+  <!-- Fontes do guia de estilos: Space Grotesk (títulos) + Inter (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- A ordem importa: primeiro os tokens (variáveis), depois o que usa eles -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/cabecalho.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/catalogo.css">
+  <link rel="stylesheet" href="css/sacola.css">
+</head>
+<body>
+
+  <!-- ========== CABEÇALHO ========== -->
+  <header class="cabecalho">
+    <p class="faixa-topo">Sua próxima noite começa aqui<span class="so-desktop"> · Conheça a Night Collection</span></p>
+
+    <div class="cabecalho__barra container">
+      <!-- Logo: versão compacta (Maia + traço de luz + FASHION maior, para ficar legível pequena) -->
+      <a href="#" class="cabecalho__logo" aria-label="Maia Fashion, página inicial">
+        <img src="img/logo/maia-fashion-compacta.svg" alt="Maia Fashion" width="658" height="408">
+      </a>
+
+      <nav class="cabecalho__nav" aria-label="Navegação principal">
+        <a href="#" class="nav-link nav-link--ativo" aria-current="page">Night Collection</a>
+        <a href="#" class="nav-link">Vestidos</a>
+        <a href="#" class="nav-link">Saias</a>
+        <a href="#" class="nav-link">Calças</a>
+        <a href="#" class="nav-link">Macacões</a>
+      </nav>
+
+      <div class="cabecalho__icones">
+        <button class="icone-botao" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        </button>
+        <button class="icone-botao" id="botao-favoritos" aria-label="Favoritos">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          <span class="contador-icone" id="contador-favoritos" hidden>0</span>
+        </button>
+        <button class="icone-botao" id="botao-sacola" aria-label="Sacola">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="contador-icone" id="contador-sacola" hidden>0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ========== HERO COM CARROSSEL 3D ========== -->
+    <section class="hero" aria-labelledby="hero-titulo">
+
+      <!-- Coluna de texto -->
+      <div class="hero__texto">
+        <p class="etiqueta">After dark, always you.</p>
+        <h1 id="hero-titulo" class="hero__titulo">Night<br>Collection</h1>
+        <p class="hero__descricao">A noite é sua. Vista a sua melhor versão.</p>
+        <a href="#colecao" class="botao botao--claro">
+          Explorar coleção
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+
+        <!-- Informações do look em destaque (o JavaScript atualiza) -->
+        <div class="look-destaque" aria-live="off" id="look-destaque">
+          <p class="look-destaque__contador"><span id="look-numero">01</span> / <span id="look-total">08</span></p>
+          <p class="look-destaque__nome" id="look-nome">Vestido Luna</p>
+          <p class="look-destaque__detalhe" id="look-detalhe">Preto · Cetim · R$ 329,90</p>
+          <!-- Barrinha ciano que mostra o tempo até o próximo look -->
+          <div class="look-destaque__progresso" aria-hidden="true"><span id="look-progresso"></span></div>
+        </div>
+      </div>
+
+      <!-- Palco 3D: o JavaScript cria os cards aqui dentro -->
+      <div class="palco"
+           role="region"
+           aria-roledescription="carrossel"
+           aria-label="Looks da Night Collection">
+        <div class="palco__trilho" id="palco-trilho"></div>
+        <div class="palco__chao" aria-hidden="true"></div>
+
+        <div class="palco__controles">
+          <button class="controle" id="botao-anterior" aria-label="Look anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button class="controle" id="botao-pausa" aria-label="Pausar animação" aria-pressed="false">
+            <svg class="icone-pausa" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>
+            <svg class="icone-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>
+          </button>
+          <button class="controle" id="botao-proximo" aria-label="Próximo look">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CATÁLOGO ==========
+         O JavaScript (catalogo.js) preenche as abas, as opções
+         dos filtros e a grade a partir da lista de produtos. -->
+    <section class="catalogo container" id="colecao" aria-labelledby="catalogo-titulo">
+
+      <header class="catalogo__cabecalho">
+        <h2 id="catalogo-titulo" class="titulo-secao">Sua próxima noite, seu próximo look.</h2>
+        <p class="catalogo__subtitulo"><span id="total-pecas">8</span> peças para fazer a noite acontecer.</p>
+      </header>
+
+      <!-- Abas de categoria -->
+      <div class="abas" id="abas" role="group" aria-label="Categorias"></div>
+
+      <!-- Barra de filtros e ordenação -->
+      <div class="barra-filtros">
+        <!-- Celular: botão que abre a gaveta -->
+        <button class="botao-filtrar" id="abrir-filtros" type="button" aria-controls="painel-filtros" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+          Filtrar
+          <span class="contador-filtros" id="contador-filtros" hidden>0</span>
+        </button>
+
+        <!-- Desktop: rótulo -->
+        <p class="barra-filtros__rotulo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+          Filtrar por
+        </p>
+
+        <!-- O MESMO bloco de filtros vira dropdowns no desktop e gaveta no celular (só o CSS muda) -->
+        <div class="filtros" id="painel-filtros" aria-label="Filtros">
+          <div class="filtros__topo">
+            <p class="filtros__titulo">Filtrar</p>
+            <button class="icone-botao" id="fechar-filtros" type="button" aria-label="Fechar filtros">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+
+          <div class="filtro" data-grupo="tamanho">
+            <button class="filtro__botao" type="button" aria-expanded="false">Tamanho <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            <fieldset class="filtro__painel">
+              <legend>Tamanho</legend>
+              <div class="opcoes opcoes--chips" id="opcoes-tamanho"></div>
+            </fieldset>
+          </div>
+
+          <div class="filtro" data-grupo="cor">
+            <button class="filtro__botao" type="button" aria-expanded="false">Cor <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            <fieldset class="filtro__painel">
+              <legend>Cor</legend>
+              <div class="opcoes opcoes--lista" id="opcoes-cor"></div>
+            </fieldset>
+          </div>
+
+          <div class="filtro" data-grupo="preco">
+            <button class="filtro__botao" type="button" aria-expanded="false">Preço <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            <fieldset class="filtro__painel">
+              <legend>Preço</legend>
+              <div class="opcoes opcoes--lista">
+                <label class="opcao"><input type="radio" name="preco" value="todos" checked><span>Todos os preços</span></label>
+                <label class="opcao"><input type="radio" name="preco" value="0-250"><span>Até R$ 250</span></label>
+                <label class="opcao"><input type="radio" name="preco" value="250-400"><span>De R$ 250 a R$ 400</span></label>
+                <label class="opcao"><input type="radio" name="preco" value="400-99999"><span>Acima de R$ 400</span></label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="filtro" data-grupo="disponibilidade">
+            <button class="filtro__botao" type="button" aria-expanded="false">Disponibilidade <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            <fieldset class="filtro__painel">
+              <legend>Disponibilidade</legend>
+              <div class="opcoes opcoes--lista">
+                <label class="opcao"><input type="checkbox" id="so-disponiveis"><span>Mostrar só peças disponíveis</span></label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="filtros__rodape">
+            <button class="botao botao--contorno" id="limpar-filtros" type="button">Limpar</button>
+            <button class="botao botao--claro" id="ver-resultados" type="button">Ver <span id="ver-quantidade">8</span> peças</button>
+          </div>
+        </div>
+
+        <label class="ordenar">
+          <span class="ordenar__rotulo">Ordenar:</span>
+          <select id="ordenar">
+            <option value="novidades">Novidades</option>
+            <option value="menor-preco">Menor preço</option>
+            <option value="maior-preco">Maior preço</option>
+          </select>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </label>
+      </div>
+
+      <!-- Filtros escolhidos aparecem aqui como etiquetas removíveis -->
+      <div class="filtros-ativos" id="filtros-ativos" aria-live="polite"></div>
+
+      <!-- Grade de produtos -->
+      <div class="grade" id="grade"></div>
+
+      <div class="estado-vazio" id="estado-vazio" hidden>
+        <p>Nenhuma peça encontrada com esses filtros.</p>
+        <button class="botao botao--contorno" id="limpar-vazio" type="button">Limpar filtros</button>
+      </div>
+
+      <p class="catalogo__contagem" id="contagem" aria-live="polite">Você está vendo 8 de 8 peças</p>
+    </section>
+
+    <!-- Fundo escuro atrás da gaveta de filtros (celular) -->
+    <div class="sombra" id="sombra-filtros" hidden></div>
+
+    <!-- Aviso que aparece ao adicionar à sacola -->
+    <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+    <!-- ========== PAINEL DA SACOLA (abre pela direita) ==========
+         São 3 etapas dentro do mesmo painel:
+         1. itens (o que está na sacola)
+         2. dados (nome e forma de pagamento)
+         3. pagamento (Pix com QR Code, ou cartão) + envio pelo WhatsApp
+         O checkout.js mostra uma etapa por vez. -->
+    <aside class="sacola" id="painel-sacola" role="dialog" aria-modal="true" aria-labelledby="sacola-titulo" aria-hidden="true">
+
+      <header class="sacola__topo">
+        <button class="icone-botao" id="sacola-voltar" type="button" aria-label="Voltar" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <h2 class="sacola__titulo" id="sacola-titulo">Sua sacola</h2>
+        <button class="icone-botao" id="sacola-fechar" type="button" aria-label="Fechar sacola">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+
+      <!-- Indicador das etapas -->
+      <ol class="etapas" id="sacola-etapas">
+        <li data-etapa="itens">Sacola</li>
+        <li data-etapa="dados">Entrega</li>
+        <li data-etapa="pagamento">Pagamento</li>
+      </ol>
+
+      <div class="sacola__corpo">
+
+        <!-- ETAPA 1: itens -->
+        <section class="etapa" data-etapa="itens">
+          <ul class="sacola__lista" id="sacola-lista"></ul>
+          <div class="sacola__vazia" id="sacola-vazia" hidden>
+            <p>Sua sacola está vazia.</p>
+            <button class="botao botao--contorno" id="sacola-ver-colecao" type="button">Ver a coleção</button>
+          </div>
+        </section>
+
+        <!-- ETAPA 2: dados da cliente -->
+        <section class="etapa" data-etapa="dados" hidden>
+          <form class="formulario" id="form-pedido" novalidate>
+            <!-- Mensagem geral quando falta preencher algo -->
+            <p class="formulario__erro" id="erro-formulario" role="alert" hidden>Preencha os campos destacados para continuar.</p>
+
+            <label class="campo">
+              <span class="campo__rotulo">Seu nome</span>
+              <input type="text" name="nome" id="campo-nome" autocomplete="name" required placeholder="Como devemos te chamar?">
+            </label>
+
+            <!-- Endereço de entrega (só envio) -->
+            <fieldset class="campo campo--grupo">
+              <legend class="campo__rotulo">Endereço de entrega</legend>
+
+              <div class="campos-linha">
+                <label class="campo campo--cep">
+                  <span class="campo__mini">CEP</span>
+                  <input type="text" name="cep" id="campo-cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" required placeholder="00000-000">
+                </label>
+                <p class="campo__status" id="status-cep" aria-live="polite"></p>
+              </div>
+
+              <label class="campo">
+                <span class="campo__mini">Rua / Avenida</span>
+                <input type="text" name="rua" id="campo-rua" autocomplete="address-line1" required>
+              </label>
+
+              <div class="campos-linha">
+                <label class="campo campo--numero">
+                  <span class="campo__mini">Número</span>
+                  <input type="text" name="numero" id="campo-numero" inputmode="numeric" required>
+                </label>
+                <label class="campo">
+                  <span class="campo__mini">Complemento <small>(opcional)</small></span>
+                  <input type="text" name="complemento" id="campo-complemento" autocomplete="address-line2" placeholder="Apto, bloco...">
+                </label>
+              </div>
+
+              <label class="campo">
+                <span class="campo__mini">Bairro</span>
+                <input type="text" name="bairro" id="campo-bairro" required>
+              </label>
+
+              <div class="campos-linha">
+                <label class="campo">
+                  <span class="campo__mini">Cidade</span>
+                  <input type="text" name="cidade" id="campo-cidade" autocomplete="address-level2" required>
+                </label>
+                <label class="campo campo--uf">
+                  <span class="campo__mini">Estado</span>
+                  <select name="uf" id="campo-uf" autocomplete="address-level1" required></select>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="campo">
+              <legend class="campo__rotulo">Forma de pagamento</legend>
+
+              <label class="pagamento-opcao">
+                <input type="radio" name="pagamento" value="pix" checked>
+                <span class="pagamento-opcao__caixa">
+                  <span class="pagamento-opcao__nome">Pix <em class="selo-desconto" id="selo-desconto">5% off</em></span>
+                  <span class="pagamento-opcao__valor" id="valor-pix">R$ 0,00</span>
+                </span>
+              </label>
+
+              <label class="pagamento-opcao">
+                <input type="radio" name="pagamento" value="cartao">
+                <span class="pagamento-opcao__caixa">
+                  <span class="pagamento-opcao__nome">Cartão de crédito</span>
+                  <span class="pagamento-opcao__valor" id="valor-cartao">até 3x</span>
+                </span>
+              </label>
+
+              <label class="campo campo--parcelas" id="campo-parcelas" hidden>
+                <span class="campo__rotulo">Parcelas</span>
+                <select name="parcelas" id="campo-parcelas-select"></select>
+              </label>
+            </fieldset>
+
+            <label class="campo">
+              <span class="campo__rotulo">Observação <small>(opcional)</small></span>
+              <textarea name="observacao" id="campo-observacao" rows="3" placeholder="Ex.: preciso receber até sexta"></textarea>
+            </label>
+          </form>
+        </section>
+
+        <!-- ETAPA 3: pagamento e envio -->
+        <section class="etapa" data-etapa="pagamento" hidden>
+          <p class="pedido-numero">Pedido <strong id="pedido-numero">#</strong></p>
+
+          <!-- Mostrado quando a cliente escolhe Pix -->
+          <div class="pix" id="bloco-pix">
+            <p class="pix__instrucao">Escaneie o QR Code no app do seu banco ou copie o código abaixo.</p>
+            <div class="pix__qrcode" id="pix-qrcode" role="img" aria-label="QR Code do Pix"></div>
+            <p class="pix__valor">Valor: <strong id="pix-valor">R$ 0,00</strong></p>
+            <label class="campo">
+              <span class="campo__rotulo">Pix copia e cola</span>
+              <textarea id="pix-codigo" rows="4" readonly></textarea>
+            </label>
+            <button class="botao botao--contorno botao--largo" id="pix-copiar" type="button">Copiar código Pix</button>
+          </div>
+
+          <!-- Mostrado quando a cliente escolhe cartão -->
+          <div class="cartao-info" id="bloco-cartao" hidden>
+            <p>Você escolheu <strong id="cartao-resumo">cartão</strong>.</p>
+            <p>Envie o pedido pelo WhatsApp: vamos responder com o <strong>link de pagamento seguro</strong> para você pagar com cartão.</p>
+          </div>
+
+          <!-- Resumo da entrega -->
+          <div class="entrega-resumo">
+            <p class="campo__rotulo">Entregar em</p>
+            <p id="entrega-endereco"></p>
+          </div>
+
+          <p class="aviso-envio">Depois de pagar, envie o pedido pelo WhatsApp para confirmarmos o pagamento e o envio.</p>
+          <p class="aviso-envio aviso-envio--ok" id="aviso-enviado" hidden>
+            Pedido enviado? Assim que confirmarmos o pagamento, respondemos por lá. 💜
+            <button class="link-simples" id="concluir-pedido" type="button">Concluir e esvaziar a sacola</button>
+          </p>
+        </section>
+      </div>
+
+      <!-- Rodapé fixo do painel: resumo de valores + botão principal -->
+      <footer class="sacola__rodape" id="sacola-rodape">
+        <dl class="resumo" id="sacola-resumo">
+          <div class="resumo__subtotal"><dt>Peças</dt><dd id="resumo-subtotal">R$ 0,00</dd></div>
+          <div class="resumo__frete"><dt>Frete</dt><dd id="resumo-frete">calculado no endereço</dd></div>
+          <div class="resumo__pix"><dt>Total no Pix (<span id="resumo-desconto">5%</span> off nas peças)</dt><dd id="resumo-pix">R$ 0,00</dd></div>
+          <div><dt>Total no cartão</dt><dd id="resumo-cartao">3x de R$ 0,00</dd></div>
+        </dl>
+        <button class="botao botao--claro botao--largo" id="sacola-avancar" type="button">Finalizar pedido</button>
+        <a class="botao botao--whatsapp botao--largo" id="sacola-whatsapp" href="#" target="_blank" rel="noopener" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2L9 9.5z"/></svg>
+          Enviar pedido pelo WhatsApp
+        </a>
+      </footer>
+    </aside>
+
+    <!-- Fundo escuro atrás do painel da sacola -->
+    <div class="sombra" id="sombra-sacola" hidden></div>
+  </main>
+
+  <!-- Scripts no fim (com "defer" eles só rodam depois que o HTML carregou) -->
+  <!-- A ORDEM importa: cada arquivo usa coisas dos anteriores -->
+  <script src="js/config.js" defer></script>          <!-- 1. dados da loja (WhatsApp, Pix) -->
+  <script src="js/produtos.js" defer></script>        <!-- 2. lista de produtos -->
+  <script src="js/vendor/qrcode.js" defer></script>   <!-- 3. biblioteca que desenha o QR Code -->
+  <script src="js/pix.js" defer></script>             <!-- 4. gera o Pix copia e cola -->
+  <script src="js/sacola.js" defer></script>          <!-- 5. dados da sacola -->
+  <script src="js/catalogo.js" defer></script>        <!-- 6. abas, filtros e grade -->
+  <script src="js/checkout.js" defer></script>        <!-- 7. tela da sacola e envio pelo WhatsApp -->
+  <script src="js/hero-carrossel.js" defer></script>  <!-- 8. carrossel 3D do topo -->
+</body>
+</html>

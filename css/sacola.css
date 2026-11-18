@@ -1,0 +1,386 @@
+/* =========================================================
+   SACOLA — painel lateral com as 3 etapas do pedido
+   ========================================================= */
+
+/* ---------- O painel ---------- */
+.sacola {
+  position: fixed;                        /* fica "grudado" na tela, mesmo rolando a página */
+  top: 0;                                 /* encostado no topo... */
+  right: 0;                               /* ...e na direita */
+  bottom: 0;                              /* ...até embaixo */
+  z-index: 120;                           /* acima de tudo (o fundo escuro fica em 110) */
+  width: min(440px, 100%);                /* 440px no computador; tela toda no celular */
+  display: flex;                          /* organiza topo / corpo / rodapé... */
+  flex-direction: column;                 /* ...um embaixo do outro */
+  background: var(--cor-fundo-elevado);   /* fundo levemente mais claro que a página */
+  border-left: 1px solid var(--cor-borda-sutil);  /* linha fina separando da página */
+  transform: translateX(100%);            /* começa escondido, fora da tela à direita */
+  visibility: hidden;                     /* e invisível para o teclado/leitor de tela */
+  transition: transform 500ms var(--curva-suave), visibility 500ms;  /* desliza suavemente */
+}
+
+.sacola.aberto {                          /* quando o JavaScript coloca a classe "aberto"... */
+  transform: none;                        /* ...o painel volta para a tela */
+  visibility: visible;                    /* ...e fica visível */
+}
+
+.sombra#sombra-sacola { z-index: 110; }   /* fundo escuro logo abaixo do painel */
+
+/* ---------- Topo ---------- */
+.sacola__topo {
+  display: flex;                          /* seta, título e X lado a lado */
+  align-items: center;                    /* alinhados pelo meio */
+  gap: var(--espaco-8);                   /* espaço entre eles */
+  padding: var(--espaco-12) var(--espaco-12) var(--espaco-12) var(--espaco-24);  /* respiro interno */
+  border-bottom: 1px solid var(--cor-borda-sutil);  /* linha embaixo */
+}
+
+.sacola__titulo {
+  flex: 1;                                /* ocupa o espaço que sobra (empurra o X para a direita) */
+  font-family: var(--fonte-titulo);       /* Space Grotesk */
+  font-size: 20px;
+  font-weight: 500;
+}
+
+#sacola-voltar:not([hidden]) + .sacola__titulo { margin-left: calc(var(--espaco-12) * -1); }  /* aproxima o título da seta */
+
+/* ---------- Indicador de etapas ---------- */
+.etapas {
+  display: flex;                          /* os 3 passos lado a lado */
+  list-style: none;                       /* sem bolinhas de lista */
+  gap: var(--espaco-8);
+  padding: var(--espaco-16) var(--espaco-24);
+  font-size: 12px;
+  color: var(--cor-texto-secundario);
+  counter-reset: etapa;                   /* contador automático: 1, 2, 3 */
+}
+
+.etapas li {
+  flex: 1;                                /* cada passo com a mesma largura */
+  display: grid;
+  gap: var(--espaco-8);
+  counter-increment: etapa;               /* soma 1 no contador a cada passo */
+}
+
+.etapas li::before {
+  content: "";                            /* barrinha em cima de cada passo */
+  height: 2px;
+  background: var(--cor-borda-sutil);     /* cinza por padrão */
+  transition: background var(--duracao-media) var(--curva-suave);
+}
+
+.etapas li::after { content: none; }
+
+.etapas li.atual { color: var(--cor-texto-principal); }               /* passo atual: texto claro */
+.etapas li.atual::before { background: var(--cor-destaque-ciano); }   /* barrinha ciano */
+.etapas li.feita::before { background: var(--cor-texto-secundario); } /* passos já feitos: barrinha cinza clara */
+
+/* ---------- Corpo (parte que rola) ---------- */
+.sacola__corpo {
+  flex: 1;                                /* ocupa todo o espaço entre topo e rodapé */
+  overflow-y: auto;                       /* rola se o conteúdo for grande */
+  padding: 0 var(--espaco-24) var(--espaco-24);
+}
+
+/* ---------- Itens ---------- */
+.sacola__lista { list-style: none; }
+
+.item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;   /* foto | informações | preço */
+  gap: var(--espaco-16);
+  padding-block: var(--espaco-16);
+  border-bottom: 1px solid var(--cor-borda-sutil);
+  animation: surgir 400ms var(--curva-suave);  /* aparece suavemente */
+}
+
+.item__foto {
+  width: 80px;
+  aspect-ratio: 4 / 5;                    /* mesma proporção das fotos do catálogo */
+  object-fit: cover;                      /* preenche sem distorcer */
+}
+
+.item__nome { font-family: var(--fonte-titulo); font-weight: 500; }
+.item__detalhe { font-size: 13px; color: var(--cor-texto-secundario); margin-bottom: var(--espaco-12); }
+
+.item__quantidade {
+  display: inline-flex;                   /* − número + em linha */
+  align-items: center;
+  border: 1px solid var(--cor-borda-sutil);
+}
+
+.item__quantidade button {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.item__quantidade span {
+  min-width: 24px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.item__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;                  /* tudo alinhado à direita */
+  justify-content: space-between;         /* preço em cima, "Remover" embaixo */
+}
+
+.item__preco { font-weight: 500; }
+
+.link-simples {
+  font-size: 13px;
+  color: var(--cor-texto-secundario);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-simples:hover { color: var(--cor-texto-principal); }
+
+.sacola__vazia {
+  display: grid;
+  justify-items: center;
+  gap: var(--espaco-16);
+  padding-block: var(--espaco-96);
+  color: var(--cor-texto-secundario);
+}
+.sacola__vazia[hidden] { display: none; }
+
+/* ---------- Formulário ---------- */
+.formulario {
+  display: grid;
+  gap: var(--espaco-24);
+  padding-top: var(--espaco-8);
+}
+
+.campo {
+  display: grid;
+  gap: var(--espaco-8);
+  border: none;                           /* (o fieldset vem com borda por padrão) */
+}
+
+.campo[hidden] { display: none; }
+
+.campo__rotulo {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espaco-4);
+}
+
+.campo__rotulo small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+.campo input,
+.campo textarea,
+.campo select {
+  width: 100%;
+  padding: var(--espaco-12) var(--espaco-16);
+  background: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-borda-sutil);
+  color: var(--cor-texto-principal);
+  font: inherit;
+  font-size: 16px;                        /* 16px evita que o iPhone dê zoom ao tocar no campo */
+  resize: vertical;
+  transition: border-color 200ms;
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--cor-texto-secundario);
+}
+
+.campo input[aria-invalid="true"],
+.campo select[aria-invalid="true"] { border-color: var(--cor-destaque-magenta); }  /* erro: borda magenta */
+
+/* Aviso geral de erro no topo do formulário */
+.formulario__erro {
+  padding: var(--espaco-12) var(--espaco-16);
+  border-left: 2px solid var(--cor-destaque-magenta);  /* filete magenta = atenção */
+  background: var(--cor-fundo-principal);
+  font-size: 14px;
+}
+
+/* Grupo do endereço: campos menores, mais próximos */
+.campo--grupo { gap: var(--espaco-12); }
+
+.campo__mini {                            /* rótulo pequeno de cada campo do endereço */
+  font-size: 13px;
+  color: var(--cor-texto-secundario);
+}
+
+.campo__mini small { font-size: 12px; }
+
+/* Dois campos lado a lado (ex.: Número + Complemento) */
+.campos-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;         /* duas colunas iguais */
+  gap: var(--espaco-12);
+  align-items: end;                       /* alinha pela base (os campos ficam na mesma linha) */
+}
+
+.campo--numero { max-width: 140px; }      /* número é curto */
+.campos-linha:has(.campo--numero) { grid-template-columns: 120px 1fr; }  /* número estreito, complemento largo */
+.campos-linha:has(.campo--uf) { grid-template-columns: 1fr 96px; }       /* cidade larga, estado estreito */
+
+.campo__status {                          /* "Buscando endereço…" ao lado do CEP */
+  font-size: 13px;
+  color: var(--cor-texto-secundario);
+  padding-bottom: var(--espaco-12);
+}
+
+/* Endereço na etapa de pagamento */
+.entrega-resumo {
+  margin-top: var(--espaco-24);
+  padding: var(--espaco-16);
+  border: 1px solid var(--cor-borda-sutil);
+  font-size: 14px;
+}
+
+.campo__erro { font-size: 13px; color: var(--cor-destaque-magenta); }
+
+/* Opções de pagamento em "cartões" clicáveis */
+.pagamento-opcao input {
+  position: absolute;                     /* esconde o radio nativo... */
+  opacity: 0;                             /* ...mas ele continua funcionando pelo teclado */
+}
+
+.pagamento-opcao__caixa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-12);
+  padding: var(--espaco-16);
+  border: 1px solid var(--cor-borda-sutil);
+  cursor: pointer;
+  transition: border-color 200ms, background 200ms;
+}
+
+.pagamento-opcao + .pagamento-opcao .pagamento-opcao__caixa { margin-top: var(--espaco-8); }
+
+.pagamento-opcao input:checked + .pagamento-opcao__caixa {  /* opção escolhida */
+  border-color: var(--cor-texto-principal);
+  background: var(--cor-fundo-superficie);
+}
+
+.pagamento-opcao input:focus-visible + .pagamento-opcao__caixa {
+  outline: 2px solid var(--cor-destaque-ciano);
+  outline-offset: 2px;
+}
+
+.pagamento-opcao__nome { display: flex; align-items: center; gap: var(--espaco-8); }
+.pagamento-opcao__valor { font-size: 14px; color: var(--cor-texto-secundario); }
+
+.selo-desconto {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border: 1px solid var(--cor-destaque-ciano);  /* detalhe ciano */
+  color: var(--cor-destaque-ciano);
+}
+
+.campo--parcelas { margin-top: var(--espaco-16); }
+
+/* ---------- Pagamento ---------- */
+.pedido-numero {
+  padding-top: var(--espaco-8);
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+}
+
+.pedido-numero strong { color: var(--cor-texto-principal); letter-spacing: 0.06em; }
+
+.pix,
+.cartao-info {
+  display: grid;
+  gap: var(--espaco-16);
+  margin-top: var(--espaco-16);
+}
+
+.pix[hidden], .cartao-info[hidden] { display: none; }
+
+.pix__instrucao,
+.cartao-info p,
+.aviso-envio { font-size: 14px; color: var(--cor-texto-secundario); }
+
+.cartao-info strong { color: var(--cor-texto-principal); font-weight: 500; }
+
+.pix__qrcode {
+  width: 240px;
+  justify-self: center;                   /* centraliza o QR */
+  padding: var(--espaco-8);
+  background: #ffffff;                    /* QR Code precisa de fundo claro para o celular ler */
+  animation: surgir 500ms var(--curva-suave);
+}
+
+.pix__qrcode svg {
+  width: 100%;                            /* ocupa a caixa toda */
+  height: auto;                           /* mantém quadrado */
+  display: block;
+  stroke: none;                           /* IMPORTANTE: anula o contorno que a regra geral de ícones (base.css) põe em todo SVG */
+}
+
+.pix__valor { text-align: center; }
+
+.pix textarea {
+  font-family: ui-monospace, monospace;   /* letra de "código" */
+  font-size: 12px;
+  word-break: break-all;                  /* quebra o código em qualquer ponto */
+}
+
+.aviso-envio { margin-top: var(--espaco-24); }
+.aviso-envio[hidden] { display: none; }
+
+.aviso-envio--ok {
+  display: grid;
+  gap: var(--espaco-8);
+  justify-items: start;
+  padding: var(--espaco-16);
+  border-left: 2px solid var(--cor-destaque-ciano);
+  background: var(--cor-fundo-principal);
+  color: var(--cor-texto-principal);
+}
+
+/* ---------- Rodapé ---------- */
+.sacola__rodape {
+  display: grid;
+  gap: var(--espaco-16);
+  padding: var(--espaco-16) var(--espaco-24) var(--espaco-24);
+  border-top: 1px solid var(--cor-borda-sutil);
+  background: var(--cor-fundo-elevado);
+}
+
+.sacola__rodape[hidden] { display: none; }
+
+.resumo { display: grid; gap: var(--espaco-4); font-size: 14px; }
+
+.resumo div {
+  display: flex;
+  justify-content: space-between;         /* nome à esquerda, valor à direita */
+  color: var(--cor-texto-secundario);
+}
+
+.resumo div:first-child { color: var(--cor-texto-principal); font-size: 16px; font-weight: 500; }
+.resumo__pix dd { color: var(--cor-texto-principal); }
+
+.botao--largo {
+  width: 100%;                            /* botão ocupa a largura toda */
+  justify-content: center;
+}
+
+.botao[hidden] { display: none; }
+
+.botao--whatsapp {
+  gap: var(--espaco-12);
+  background: #25d366;                    /* verde oficial do WhatsApp (reconhecível na hora) */
+  color: #0b141a;
+}
+
+.botao--whatsapp:hover { background: #3ee07a; }
+.botao--whatsapp svg { width: 20px; height: 20px; }

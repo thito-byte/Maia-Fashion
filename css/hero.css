@@ -1,0 +1,346 @@
+/* =========================================================
+   HERO COM CARROSSEL 3D
+   ---------------------------------------------------------
+   Divisão de tarefas:
+   - O JavaScript só diz "em que POSIÇÃO cada card está"
+     (variáveis --pos e --dist).
+   - O CSS decide "como cada posição APARECE"
+     (tamanho, giro, profundidade, brilho).
+   ========================================================= */
+
+.hero {
+  /* Grid: texto à esquerda (5 partes), palco à direita (7 partes) */
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  align-items: center;
+  gap: var(--espaco-32);
+  min-height: clamp(640px, calc(100vh - 124px), 820px);
+  padding-left: var(--margem-lateral);
+  overflow: hidden; /* nada do 3D "vaza" para fora do hero */
+  position: relative;
+}
+
+/* Luz de "holofote" atrás do palco: um degradê radial bem sutil */
+.hero::before {
+  content: "";
+  position: absolute;
+  right: 10%;
+  top: 8%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(closest-side, rgba(242, 238, 243, 0.09), transparent);
+  pointer-events: none;
+}
+
+/* ---------------- Coluna de texto ---------------- */
+
+.hero__texto {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-24);
+}
+
+.hero__titulo {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: clamp(48px, 6vw, 80px); /* mínimo 48, cresce com a tela, máximo 80 */
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.hero__descricao {
+  color: var(--cor-texto-principal);
+  max-width: 34ch;
+}
+
+/* Bloco com o nome do look em destaque */
+.look-destaque {
+  margin-top: var(--espaco-32);
+  display: grid;
+  gap: var(--espaco-4);
+  min-height: 110px;
+}
+
+.look-destaque__contador {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--cor-texto-secundario);
+}
+
+.look-destaque__contador span:first-child {
+  color: var(--cor-texto-principal);
+}
+
+.look-destaque__nome {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: 22px;
+}
+
+.look-destaque__detalhe {
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+}
+
+/* Troca suave de texto quando o look muda */
+.look-destaque__nome,
+.look-destaque__detalhe {
+  transition: opacity var(--duracao-media) var(--curva-suave),
+              transform var(--duracao-media) var(--curva-suave);
+}
+
+.look-destaque.trocando .look-destaque__nome,
+.look-destaque.trocando .look-destaque__detalhe {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Barrinha de progresso: o detalhe ciano do hero */
+.look-destaque__progresso {
+  margin-top: var(--espaco-12);
+  width: 120px;
+  height: 2px;
+  background: var(--cor-borda-sutil);
+  overflow: hidden;
+}
+
+.look-destaque__progresso span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--cor-destaque-ciano);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.look-destaque__progresso span.rodando {
+  animation: progresso var(--intervalo, 4500ms) linear forwards;
+}
+
+.hero.pausado .look-destaque__progresso span {
+  animation-play-state: paused;
+}
+
+@keyframes progresso {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ---------------- Palco 3D ---------------- */
+
+.palco {
+  --card-largura: 320px;
+  --passo: 235px;       /* distância lateral entre os cards */
+  --profundidade: 230px; /* o quanto cada card "afunda" */
+  --giro: 30deg;         /* o quanto cada card gira */
+
+  position: relative;
+  height: 640px;
+  perspective: 1600px;   /* distância do "olho": cria o efeito 3D */
+  perspective-origin: 50% 40%;
+  touch-action: pan-y;   /* deixa rolar a página na vertical no celular */
+}
+
+.palco__trilho {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d; /* os filhos ficam num espaço 3D de verdade */
+}
+
+/* Cada card de look */
+.card-look {
+  /* --pos e --dist vêm do JavaScript */
+  --pos: 0;
+  --dist: 0;
+
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: var(--card-largura);
+  aspect-ratio: 4 / 5;
+  margin-left: calc(var(--card-largura) / -2);
+  translate: 0 -50%;
+
+  /* O coração do efeito: */
+  transform:
+    translateX(calc(var(--pos) * var(--passo)))
+    translateZ(calc(var(--dist) * var(--profundidade) * -1))
+    rotateY(calc(var(--pos) * var(--giro) * -1));
+
+  opacity: calc(1 - var(--dist) * 0.28);
+  filter: brightness(calc(1 - var(--dist) * 0.3)) saturate(calc(1 - var(--dist) * 0.25));
+  z-index: calc(10 - var(--dist));
+
+  transition:
+    transform var(--duracao-lenta) var(--curva-suave),
+    opacity var(--duracao-lenta) var(--curva-suave),
+    filter var(--duracao-lenta) var(--curva-suave);
+
+  /* Reflexo no "chão" (funciona no Chrome, Edge e Safari;
+     no Firefox simplesmente não aparece, sem quebrar nada) */
+  -webkit-box-reflect: below 6px linear-gradient(transparent 78%, rgba(255, 255, 255, 0.14));
+}
+
+.card-look img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+}
+
+/* Véu escuro por cima da foto: dá o clima "noturno" e cinematográfico */
+.card-look::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(16, 13, 22, 0.15) 0%, transparent 35%, rgba(16, 13, 22, 0.55) 100%);
+  pointer-events: none;
+}
+
+/* Cards muito longe do centro ficam invisíveis */
+.card-look.oculto {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-look:not(.ativo) {
+  cursor: pointer;
+}
+
+/* "Chão" do palco: uma sombra elíptica embaixo dos cards */
+.palco__chao {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 70px;
+  height: 120px;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.7), transparent);
+  pointer-events: none;
+}
+
+/* Botões anterior / pausar / próximo */
+.palco__controles {
+  position: absolute;
+  left: 50%;
+  bottom: var(--espaco-24);
+  translate: -50% 0;
+  display: flex;
+  gap: var(--espaco-12);
+  z-index: 20;
+}
+
+.controle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--cor-borda-sutil);
+  border-radius: 50%;
+  color: var(--cor-texto-principal);
+  background: rgba(16, 13, 22, 0.6);
+  backdrop-filter: blur(6px);
+  transition: border-color var(--duracao-media) var(--curva-suave);
+}
+
+.controle:hover {
+  border-color: var(--cor-texto-secundario);
+}
+
+.controle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Mostra "pausa" ou "play" conforme o estado do botão */
+.controle .icone-play { display: none; }
+.controle[aria-pressed="true"] .icone-pausa { display: none; }
+.controle[aria-pressed="true"] .icone-play { display: block; fill: currentColor; }
+
+/* ---------------- Animação de ENTRADA (ao abrir a página) ---------------- */
+
+/* Textos sobem e aparecem, um depois do outro */
+.hero__texto > * {
+  animation: surgir 1s var(--curva-suave) both;
+}
+.hero__texto > *:nth-child(1) { animation-delay: 0.15s; }
+.hero__texto > *:nth-child(2) { animation-delay: 0.30s; }
+.hero__texto > *:nth-child(3) { animation-delay: 0.45s; }
+.hero__texto > *:nth-child(4) { animation-delay: 0.60s; }
+.hero__texto > *:nth-child(5) { animation-delay: 0.90s; }
+
+@keyframes surgir {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Cards começam "lá no fundo" e chegam até o palco */
+.palco--entrando .card-look {
+  transform: translateZ(-900px) rotateY(0deg);
+  opacity: 0;
+}
+
+/* ---------------- Celular e tablet ---------------- */
+
+@media (max-width: 900px) {
+  /* No celular, a ordem muda: título → palco 3D → look → botão.
+     "display: contents" faz a caixa .hero__texto "sumir" e seus filhos
+     virarem filhos diretos do .hero — assim podemos reordenar todos. */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaco-16);
+    padding-inline: var(--margem-lateral);
+    padding-top: var(--espaco-32);
+    padding-bottom: var(--espaco-48);
+    min-height: 0;
+  }
+
+  .hero__texto { display: contents; }
+
+  .hero__texto > .etiqueta      { order: 1; }
+  .hero__titulo                 { order: 2; }
+  .hero__descricao              { order: 3; }
+  .palco                        { order: 4; }
+  .look-destaque                { order: 5; }
+  .hero__texto > .botao         { order: 6; }
+
+  .hero::before {
+    right: -10%;
+    top: 30%;
+    width: 120%;
+    height: 45%;
+  }
+
+  .palco {
+    --card-largura: 230px;
+    --passo: 125px;
+    --profundidade: 180px;
+    --giro: 34deg;
+    align-self: stretch;
+    height: 440px;
+    margin-inline: calc(var(--margem-lateral) * -1); /* palco ocupa a largura toda */
+  }
+
+  .card-look { top: 44%; }
+
+  .palco__controles { bottom: 0; }
+
+  .look-destaque {
+    margin-top: var(--espaco-8);
+    min-height: 0;
+  }
+}
+
+/* ---------------- Acessibilidade: menos movimento ----------------
+   Se a pessoa ativou "reduzir movimento" no celular/computador,
+   tiramos as animações de entrada e deixamos as trocas quase instantâneas. */
+@media (prefers-reduced-motion: reduce) {
+  .hero__texto > * { animation: none; }
+  .card-look { transition-duration: 1ms; }
+  .look-destaque__progresso { display: none; }
+}

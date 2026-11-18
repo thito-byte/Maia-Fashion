@@ -1,0 +1,60 @@
+/* =========================================================
+   TOKENS — o "dicionário visual" da Maia Fashion
+   ---------------------------------------------------------
+   São as MESMAS variáveis criadas no Figma (painel Variáveis).
+   Se mudar uma cor aqui, ela muda no site inteiro.
+   ========================================================= */
+
+:root {
+  /* ---------- Cores: fundos ---------- */
+  --cor-fundo-principal:   #100D16;  /* fundo geral */
+  --cor-fundo-elevado:     #1B1621;  /* faixas levemente destacadas */
+  --cor-fundo-superficie:  #29232F;  /* campos, abas ativas */
+  --cor-fundo-claro:       #F2EEF3;  /* botão principal */
+
+  /* ---------- Cores: bordas ---------- */
+  --cor-borda-sutil:       #443A4C;
+  --cor-borda-forte:       #69616F;
+
+  /* ---------- Cores: textos ---------- */
+  --cor-texto-principal:   #F2EEF3;
+  --cor-texto-secundario:  #B8B0BF;
+  --cor-texto-inverso:     #100D16;  /* texto sobre fundo claro */
+
+  /* ---------- Cores: destaques (SÓ em detalhes!) ---------- */
+  --cor-destaque-ciano:    #00DDEB;
+  --cor-destaque-magenta:  #D92CBF;
+
+  /* ---------- Espaçamentos (escala 4/8) ---------- */
+  --espaco-4: 4px;
+  --espaco-8: 8px;
+  --espaco-12: 12px;
+  --espaco-16: 16px;
+  --espaco-24: 24px;
+  --espaco-32: 32px;
+  --espaco-48: 48px;
+  --espaco-64: 64px;
+  --espaco-96: 96px;
+
+  /* ---------- Tipografia ---------- */
+  --fonte-titulo: "Space Grotesk", system-ui, sans-serif;
+  --fonte-texto:  "Inter", system-ui, sans-serif;
+
+  /* ---------- Movimento ----------
+     Uma única "curva" de animação para o site inteiro:
+     começa rápida e desacelera suavemente (sensação elegante). */
+  --curva-suave: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duracao-lenta: 900ms;
+  --duracao-media: 400ms;
+
+  /* ---------- Layout ---------- */
+  --largura-maxima: 1312px;
+  --margem-lateral: var(--espaco-64);
+}
+
+/* No celular, as margens laterais ficam menores */
+@media (max-width: 768px) {
+  :root {
+    --margem-lateral: var(--espaco-24);
+  }
+}

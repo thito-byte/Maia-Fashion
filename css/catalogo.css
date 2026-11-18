@@ -1,0 +1,722 @@
+/* =========================================================
+   CATÁLOGO — abas, filtros, grade de produtos e sacola
+   ========================================================= */
+
+.catalogo {
+  padding-block: var(--espaco-64);
+}
+
+.catalogo__cabecalho {
+  display: grid;
+  gap: var(--espaco-8);
+  margin-bottom: var(--espaco-32);
+}
+
+.catalogo__subtitulo {
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+}
+
+/* ---------------- Abas de categoria ---------------- */
+
+.abas {
+  display: flex;
+  gap: var(--espaco-40, 40px);
+  border-bottom: 1px solid var(--cor-borda-sutil);
+  overflow-x: auto;              /* no celular, arrasta para o lado */
+  scrollbar-width: none;         /* esconde a barra de rolagem (Firefox) */
+  margin-bottom: var(--espaco-24);
+}
+.abas::-webkit-scrollbar { display: none; }  /* (Chrome/Safari) */
+
+.aba {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--espaco-12) 0 var(--espaco-16);
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+  white-space: nowrap;
+  transition: color var(--duracao-media) var(--curva-suave);
+}
+
+.aba:hover { color: var(--cor-texto-principal); }
+
+.aba__contador {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* A linha ciano "desliza" para baixo da aba ativa */
+.aba::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--cor-destaque-ciano);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duracao-media) var(--curva-suave);
+}
+
+.aba--ativa { color: var(--cor-texto-principal); }
+.aba--ativa .aba__contador { color: var(--cor-destaque-ciano); }
+.aba--ativa::after { transform: scaleX(1); }
+
+/* ---------------- Barra de filtros ---------------- */
+
+.barra-filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-8);
+  min-height: 56px;
+  padding: 0 var(--espaco-16);
+  border: 1px solid var(--cor-borda-sutil);
+  position: relative;
+  z-index: 30;
+}
+
+.barra-filtros__rotulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-12);
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+  margin-right: var(--espaco-24);
+}
+
+.botao-filtrar { display: none; }  /* só aparece no celular */
+
+.filtros {
+  display: flex;
+  gap: var(--espaco-8);
+}
+
+.filtros__topo,
+.filtros__rodape { display: none; } /* só aparecem na gaveta do celular */
+
+.filtro { position: relative; }
+
+.filtro__botao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-8);
+  padding: var(--espaco-12) var(--espaco-16);
+  font-size: 14px;
+}
+
+.filtro__botao svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--duracao-media) var(--curva-suave);
+}
+
+.filtro.aberto .filtro__botao svg { transform: rotate(180deg); }
+
+/* Painel do dropdown */
+.filtro__painel {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 0;
+  min-width: 280px;
+  padding: var(--espaco-16);
+  border: 1px solid var(--cor-borda-sutil);
+  background: var(--cor-fundo-elevado);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+
+  /* Escondido, mas pronto para aparecer com fade */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 250ms var(--curva-suave), transform 250ms var(--curva-suave), visibility 250ms;
+}
+
+.filtro.aberto .filtro__painel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* No desktop o nome do grupo já está no botão: a legenda fica só para leitores de tela */
+.filtro__painel legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ---------------- Opções dos filtros ---------------- */
+
+/* Esconde a caixinha nativa, mas ela continua funcionando (e acessível pelo teclado) */
+.opcao input,
+.opcao-chip input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcoes--lista {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.opcao span {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-12);
+  padding: var(--espaco-8) 0;
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+  cursor: pointer;
+}
+
+/* Caixinha desenhada por nós */
+.opcao span::before {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--cor-borda-forte);
+  transition: background 200ms, border-color 200ms;
+}
+
+.opcao input[type="radio"] + span::before { border-radius: 50%; }
+
+.opcao input:checked + span { color: var(--cor-texto-principal); }
+.opcao input:checked + span::before {
+  border-color: var(--cor-texto-principal);
+  background: radial-gradient(circle, var(--cor-texto-principal) 0 4px, transparent 5px);
+}
+.opcao input[type="checkbox"]:checked + span::before {
+  background: var(--cor-texto-principal);
+  box-shadow: inset 0 0 0 3px var(--cor-fundo-elevado);
+}
+
+.opcao input:focus-visible + span::before,
+.opcao-chip input:focus-visible + span {
+  outline: 2px solid var(--cor-destaque-ciano);
+  outline-offset: 2px;
+}
+
+.amostra-cor {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--cor-borda-forte);
+}
+
+/* Tamanhos em "chips" quadrados */
+.opcoes--chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+}
+
+.opcao-chip span {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding-inline: var(--espaco-8);
+  border: 1px solid var(--cor-borda-sutil);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 200ms, background 200ms, color 200ms;
+}
+
+.opcao-chip span:hover { border-color: var(--cor-borda-forte); }
+
+.opcao-chip input:checked + span {
+  background: var(--cor-fundo-claro);
+  border-color: var(--cor-fundo-claro);
+  color: var(--cor-texto-inverso);
+}
+
+/* ---------------- Ordenação ---------------- */
+
+.ordenar {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-4);
+  font-size: 14px;
+}
+
+.ordenar select {
+  appearance: none;           /* tira o visual padrão do navegador */
+  background: transparent;
+  border: none;
+  color: var(--cor-texto-principal);
+  font: inherit;
+  padding: var(--espaco-12) var(--espaco-32) var(--espaco-12) var(--espaco-4);
+  cursor: pointer;
+}
+
+.ordenar select option {
+  background: var(--cor-fundo-elevado);
+}
+
+.ordenar svg {
+  position: absolute;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+/* ---------------- Etiquetas de filtros ativos ---------------- */
+
+.filtros-ativos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-8);
+  min-height: var(--espaco-24);
+  margin-block: var(--espaco-16) var(--espaco-16);
+}
+
+.etiqueta-filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-8);
+  padding: 6px var(--espaco-12);
+  background: var(--cor-fundo-superficie);
+  font-size: 13px;
+  animation: surgir 300ms var(--curva-suave);
+}
+
+.etiqueta-filtro svg { width: 14px; height: 14px; }
+
+.limpar-tudo {
+  font-size: 13px;
+  color: var(--cor-texto-secundario);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 6px var(--espaco-8);
+}
+
+/* ---------------- Grade de produtos ---------------- */
+
+/* Grid: 4 colunas no desktop, 3 no tablet, 2 no celular */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espaco-48) var(--espaco-24);
+}
+
+.produto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scroll-margin-top: var(--espaco-96);
+
+  /* Começa invisível e "sobe" quando aparece na tela */
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--curva-suave), transform 700ms var(--curva-suave);
+}
+
+.produto.visivel {
+  opacity: 1;
+  transform: none;
+}
+
+.produto__midia {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-bottom: var(--espaco-12);
+  background: var(--cor-fundo-superficie);
+}
+
+.produto__midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--curva-suave);
+}
+
+/* Zoom lento na foto ao passar o mouse */
+.produto:hover .produto__midia img { transform: scale(1.04); }
+
+/* Destaque quando a cliente vem do carrossel */
+.produto.destacado .produto__midia {
+  outline: 1px solid var(--cor-destaque-ciano);
+  outline-offset: 6px;
+  transition: outline-offset 400ms var(--curva-suave);
+}
+
+.selo {
+  position: absolute;
+  top: var(--espaco-12);
+  left: var(--espaco-12);
+  padding: 6px 10px;
+  background: rgba(16, 13, 22, 0.85);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Etiqueta "Novo": o filete magenta é o detalhe */
+.selo--novo { border-left: 2px solid var(--cor-destaque-magenta); }
+
+.selo--esgotado {
+  background: var(--cor-fundo-claro);
+  color: var(--cor-texto-inverso);
+}
+
+/* Botões redondos sobre a foto (44px = área de toque confortável) */
+.produto__favorito,
+.produto__adicionar {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(16, 13, 22, 0.75);
+  backdrop-filter: blur(4px);
+  transition: background 200ms, transform 300ms var(--curva-suave);
+}
+
+.produto__favorito { top: var(--espaco-8); right: var(--espaco-8); }
+.produto__adicionar { bottom: var(--espaco-8); right: var(--espaco-8); z-index: 3; }
+
+.produto__favorito svg,
+.produto__adicionar svg { width: 18px; height: 18px; }
+
+.produto__favorito:hover,
+.produto__adicionar:hover { background: rgba(16, 13, 22, 0.95); }
+
+/* Coração preenchido quando favoritado */
+.produto__favorito[aria-pressed="true"] svg {
+  fill: var(--cor-destaque-magenta);
+  stroke: var(--cor-destaque-magenta);
+  animation: pulsar 500ms var(--curva-suave);
+}
+
+.produto.escolhendo .produto__adicionar { transform: rotate(45deg); }
+
+/* Painel de tamanhos: sobe da base da foto */
+.produto__tamanhos {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--espaco-16) 60px var(--espaco-16) var(--espaco-16);
+  background: rgba(16, 13, 22, 0.9);
+  backdrop-filter: blur(8px);
+  transform: translateY(100%);
+  transition: transform 450ms var(--curva-suave);
+  z-index: 2;
+}
+
+/* Aparece ao passar o mouse (computador) ou ao tocar no botão da sacola */
+@media (hover: hover) {
+  .produto:hover .produto__tamanhos { transform: none; }
+}
+.produto.escolhendo .produto__tamanhos,
+.produto__tamanhos:focus-within { transform: none; }
+
+.produto__tamanhos-titulo {
+  font-size: 12px;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espaco-8);
+}
+
+.produto__tamanhos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tamanho {
+  min-width: 40px;
+  height: 36px;
+  padding-inline: 6px;
+  border: 1px solid var(--cor-borda-forte);
+  font-size: 13px;
+  transition: background 200ms, color 200ms, border-color 200ms;
+}
+
+.tamanho:hover:not(:disabled) {
+  background: var(--cor-fundo-claro);
+  color: var(--cor-texto-inverso);
+  border-color: var(--cor-fundo-claro);
+}
+
+.tamanho:disabled {
+  color: var(--cor-borda-forte);
+  border-color: var(--cor-borda-sutil);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.tamanho.escolhido {
+  background: var(--cor-destaque-ciano);
+  border-color: var(--cor-destaque-ciano);
+  color: var(--cor-texto-inverso);
+}
+
+/* Textos do card */
+.produto__nome {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.produto__detalhe {
+  font-size: 14px;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espaco-8);
+}
+
+.produto__preco {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.produto__condicoes {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--cor-texto-secundario);
+}
+
+.produto__condicoes span { color: var(--cor-texto-principal); }
+
+/* Peça esgotada: foto apagada, mas continua visível */
+.produto--esgotado .produto__midia img { filter: grayscale(0.6) brightness(0.55); }
+.produto--esgotado .produto__preco,
+.produto--esgotado .produto__condicoes { opacity: 0.5; }
+
+/* ---------------- Rodapé do catálogo ---------------- */
+
+.catalogo__contagem {
+  margin-top: var(--espaco-64);
+  text-align: center;
+  font-size: 13px;
+  color: var(--cor-texto-secundario);
+}
+
+.estado-vazio {
+  display: grid;
+  justify-items: center;
+  gap: var(--espaco-16);
+  padding-block: var(--espaco-96);
+  color: var(--cor-texto-secundario);
+}
+
+.estado-vazio[hidden] { display: none; }
+
+/* ---------------- Aviso "adicionado à sacola" ---------------- */
+
+.aviso {
+  position: fixed;
+  left: 50%;
+  bottom: var(--espaco-24);
+  z-index: 200;
+  max-width: calc(100% - 32px);
+  padding: var(--espaco-12) var(--espaco-24);
+  background: var(--cor-fundo-claro);
+  color: var(--cor-texto-inverso);
+  font-size: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  border-left: 3px solid var(--cor-destaque-ciano);
+
+  translate: -50% 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms var(--curva-suave), translate 350ms var(--curva-suave);
+}
+
+.aviso.visivel {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* Fundo escuro atrás da gaveta */
+.sombra {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.6);
+  animation: aparecer 300ms var(--curva-suave);
+}
+.sombra[hidden] { display: none; }
+
+@keyframes aparecer { from { opacity: 0; } }
+
+/* ================= TABLET ================= */
+@media (max-width: 1100px) {
+  .grade { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ================= CELULAR ================= */
+@media (max-width: 900px) {
+  .catalogo { padding-top: var(--espaco-64); }
+
+  .abas { gap: var(--espaco-24); margin-inline: calc(var(--margem-lateral) * -1); padding-inline: var(--margem-lateral); }
+
+  .barra-filtros {
+    border: none;
+    padding: 0;
+    gap: var(--espaco-12);
+    /* Sem isso a gaveta ficaria "presa" atrás do fundo escuro
+       (z-index só funciona dentro do mesmo "contexto de empilhamento") */
+    position: static;
+    z-index: auto;
+  }
+
+  .barra-filtros__rotulo { display: none; }
+
+  .botao-filtrar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-12);
+    height: 44px;
+    padding-inline: var(--espaco-12);
+    border: 1px solid var(--cor-borda-sutil);
+    font-size: 14px;
+  }
+
+  .contador-filtros {
+    margin-left: auto;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--cor-destaque-ciano);
+    color: var(--cor-texto-inverso);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  .ordenar {
+    flex: 1;
+    margin-left: 0;
+    height: 44px;
+    padding-left: var(--espaco-12);
+    border: 1px solid var(--cor-borda-sutil);
+  }
+  .ordenar__rotulo { display: none; }
+  .ordenar select { width: 100%; }
+  .ordenar svg { right: var(--espaco-12); }
+
+  /* ---- O mesmo bloco de filtros vira uma GAVETA que sobe de baixo ---- */
+  .filtros {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    max-height: 85vh;
+    flex-direction: column;
+    gap: 0;
+    background: var(--cor-fundo-elevado);
+    border-top: 1px solid var(--cor-borda-sutil);
+    overflow-y: auto;
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 450ms var(--curva-suave), visibility 450ms;
+  }
+
+  .filtros.aberto {
+    transform: none;
+    visibility: visible;
+  }
+
+  .filtros__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--espaco-12) var(--espaco-12) var(--espaco-12) var(--espaco-24);
+    border-bottom: 1px solid var(--cor-borda-sutil);
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo-elevado);
+    z-index: 1;
+  }
+
+  .filtros__titulo {
+    font-family: var(--fonte-titulo);
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .filtro { padding: var(--espaco-24) var(--espaco-24) 0; }
+  .filtro__botao { display: none; }
+
+  /* Os painéis deixam de ser dropdowns e ficam sempre abertos, um embaixo do outro */
+  .filtro__painel {
+    position: static;
+    min-width: 0;
+    padding: 0 0 var(--espaco-24);
+    border: none;
+    border-bottom: 1px solid var(--cor-borda-sutil);
+    background: none;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .filtro__painel legend {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    margin-bottom: var(--espaco-12);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cor-texto-secundario);
+  }
+
+  .filtros__rodape {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--espaco-12);
+    padding: var(--espaco-16) var(--espaco-24) var(--espaco-24);
+    position: sticky;
+    bottom: 0;
+    background: var(--cor-fundo-elevado);
+    margin-top: auto;
+  }
+  .filtros__rodape .botao { justify-content: center; gap: 0.3em; }
+
+  /* Grade de 2 colunas, mais compacta */
+  .grade {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espaco-32) var(--espaco-12);
+  }
+
+  .produto__nome { font-size: 15px; }
+  .produto__condicoes { font-size: 12px; }
+
+  .selo { top: var(--espaco-8); left: var(--espaco-8); font-size: 10px; padding: 5px 8px; }
+  .produto__favorito { top: 4px; right: 4px; }
+  .produto__adicionar { bottom: 4px; right: 4px; }
+
+  /* No celular o painel ocupa a largura toda e deixa espaço embaixo para o botão de fechar */
+  .produto__tamanhos { padding: var(--espaco-12) var(--espaco-12) 56px; }
+  .produto__tamanhos-titulo { display: none; }
+  .tamanho { min-width: 36px; height: 36px; font-size: 12px; }
+}
+
+/* Menos movimento: sem animação de entrada nos cards */
+@media (prefers-reduced-motion: reduce) {
+  .produto { opacity: 1; transform: none; transition: none; }
+  .produto__midia img { transition: none; }
+}
